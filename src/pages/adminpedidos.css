@@ -1,0 +1,115 @@
+.admin-pedidos-main {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #f7fafc;
+  min-height: calc(100vh - 60px);
+}
+
+.admin-pedidos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-pedidos-header h1 {
+  font-size: 2.25rem;
+  color: #1a202c;
+  margin: 0;
+}
+
+.btn-nuevo-pedido {
+  background-color: #194B44;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-nuevo-pedido:hover {
+  background-color: #2a6a5f;
+}
+
+.pedidos-table-container {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+}
+
+.pedidos-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.pedidos-table th,
+.pedidos-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.pedidos-table th {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;
+  background-color: #f7fafc;
+}
+
+.pedidos-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.pedidos-table tbody tr:hover {
+  background-color: #f7fafc;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  display: inline-block;
+}
+
+.status-delivered {
+  background-color: #c6f6d5;
+  color: #2f855a;
+}
+.status-shipped {
+  background-color: #bee3f8;
+  color: #2b6cb0;
+}
+.status-processing {
+  background-color: #faf089;
+  color: #975a16;
+}
+.status-pending {
+  background-color: #fed7d7;
+  color: #c53030;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid #cbd5e0;
+  color: #4a5568;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.action-btn:hover {
+  background-color: #edf2f7;
+  color: #1a202c;
+}

@@ -1,0 +1,308 @@
+/* src/pages/adminexpedientes.css */
+
+.admin-exp-main {
+  display: flex;
+  height: calc(100vh - 80px); /* Adjust based on Navbar height */
+  background-color: #f4f7f6;
+}
+
+.pet-list-column {
+  width: 350px;
+  border-right: 1px solid #dcdcdc;
+  display: flex;
+  flex-direction: column;
+}
+
+.pet-list-header {
+  padding: 1rem;
+  border-bottom: 1px solid #dcdcdc;
+}
+
+.pet-list-header h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.pet-search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.pet-list {
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.pet-list-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pet-list-item:hover {
+  background-color: #e9ecef;
+}
+
+.pet-list-item.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.pet-list-item.active .pet-item-species {
+  color: #e0e0e0;
+}
+
+.pet-item-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.pet-item-species {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.pet-item-owner {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.pet-list-item.active .pet-item-owner {
+  color: #e0e0e0;
+}
+
+.expediente-column {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.expediente-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #888;
+}
+
+.expediente-placeholder-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.expediente-header {
+  margin-bottom: 2rem;
+}
+
+.expediente-header h2 {
+  font-size: 2rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.expediente-owner-info {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.expediente-pet-info {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.new-entry-button {
+  background-color: #28a745;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  transition: background-color 0.2s;
+}
+
+.new-entry-button:hover {
+  background-color: #218838;
+}
+
+.record-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.record-card.incomplete {
+  border-left: 5px solid #ffc107; /* Yellow for incomplete */
+}
+
+.record-card.completed {
+  border-left: 5px solid #28a745; /* Green for completed */
+}
+
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.record-header-info .type {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+.record-header-info .date {
+  color: #666;
+  font-size: 1rem;
+}
+
+.record-actions .btn-edit {
+  background-color: #007bff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.record-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.record-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-field strong {
+  font-size: 0.8rem;
+  color: #555;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.record-field span, .record-field p {
+  font-size: 1rem;
+  margin: 0;
+  white-space: pre-wrap; /* To respect newlines in notes */
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-form .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.modal-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-form label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.modal-form input,
+.modal-form textarea,
+.modal-form select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.modal-form .full-width {
+  grid-column: 1 / -1;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ddd;
+}
+
+.modal-actions .btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-save {
+  background-color: #007bff;
+  color: white;
+}

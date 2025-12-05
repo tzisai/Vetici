@@ -1,0 +1,71 @@
+
+.about_us{
+    background-color: #ffffff;
+    padding: 48px 16px; /* espacio interno alrededor del bloque */
+}
+
+/* Grid contenedor: 2 columnas en desktop, 1 columna en móvil */
+.Grid_about{
+    display: grid;
+    grid-template-columns: 60% 40%; /* texto a la izquierda, imagen a la derecha */
+    gap: 28px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto; /* centrar */
+    box-sizing: border-box;
+}
+
+.col_about{
+    box-sizing: border-box;
+}
+
+/* Asegurar que el texto quede pegado a la izquierda de su columna */
+.col_about:first-child{
+    padding-left: 0;
+    text-align: left;
+}
+
+/* Alinear la imagen al borde derecho de su columna */
+.col_about:last-child{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+}
+
+.about_us h2{
+    margin: 0 0 12px 0;
+    font-size: 2.25rem;
+    color: #333333;
+}
+
+.parrafo_about{
+    margin: 0 0 12px 0;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: #555555;
+    text-align: justify;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.about_image{
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+}
+
+/* Responsive: una columna en pantallas pequeñas */
+@media (max-width: 900px){
+    .Grid_about{
+        grid-template-columns: 1fr; /* colapsa a una columna */
+        gap: 20px;
+    }
+    .about_image{ height: auto; }
+}
+
+@media (max-width: 420px){
+    .about_image{ height: auto; }
+    .about_us{ padding: 24px 12px; }
+}

@@ -1,0 +1,94 @@
+.admin-inventario-main {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #f7fafc;
+  min-height: calc(100vh - 60px); /* Full height minus navbar */
+}
+
+.admin-inventario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-inventario-title h1 {
+  font-size: 2.25rem;
+  color: #1a202c;
+  margin: 0;
+}
+
+.admin-inventario-title p {
+  font-size: 1.1rem;
+  color: #718096;
+  margin: 0;
+}
+
+.stock-info {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stock-label {
+  font-size: 0.8rem;
+  color: #a0aec0;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.stock-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1;
+}
+
+.stock-value.low-stock {
+  color: #e53e3e; /* red-600 */
+}
+
+.btn-reponer {
+  display: block;
+  width: 100%;
+  background-color: #3182ce; /* blue-500 */
+  color: white;
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: auto; /* Pushes button to the bottom */
+  transition: background-color 0.2s;
+}
+
+.btn-reponer:hover {
+  background-color: #2b6cb0; /* blue-600 */
+}
+
+.admin-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.btn-reponer-inventario {
+  background-color: #194B44;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-reponer-inventario:hover {
+  background-color: #2a6a5f;
+}

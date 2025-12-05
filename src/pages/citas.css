@@ -1,0 +1,303 @@
+.citas-main {
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: calc(100vh - 180px);
+}
+
+.citas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.citas-header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #111;
+}
+
+.btn-new-cita {
+  padding: 10px 16px;
+  background: #2a7ae2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 14px;
+}
+
+.btn-new-cita:hover {
+  background: #1e5bb8;
+}
+
+/* Formulario */
+.citas-form-container {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.citas-form-container h2 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  color: #111;
+}
+
+.citas-form {
+  display: grid;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  color: #111;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2a7ae2;
+  box-shadow: 0 0 0 2px rgba(42, 122, 226, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.btn-submit {
+  padding: 12px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-submit:hover {
+  background: #218838;
+}
+
+/* Secciones */
+.citas-section {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.citas-section h2 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  color: #111;
+}
+
+.empty-msg {
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+/* Lista de citas */
+.citas-list {
+  display: grid;
+  gap: 12px;
+}
+
+.cita-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+  transition: all 0.3s;
+  border-left: 4px solid #2a7ae2;
+}
+
+.cita-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.cita-card.status-pendiente {
+  border-left-color: #ffc107;
+}
+
+.cita-card.status-confirmada {
+  border-left-color: #28a745;
+}
+
+.cita-card.status-completada {
+  border-left-color: #17a2b8;
+}
+
+.cita-card.status-cancelada {
+  border-left-color: #dc3545;
+  opacity: 0.7;
+}
+
+.cita-card.past {
+  background: #f9f9f9;
+}
+
+.cita-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cita-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #111;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.status-badge.pendiente {
+  background: #ffc107;
+  color: #000;
+}
+
+.status-badge.confirmada {
+  background: #28a745;
+}
+
+.status-badge.completada {
+  background: #17a2b8;
+}
+
+.status-badge.cancelada {
+  background: #dc3545;
+}
+
+.cita-details {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.detail-item {
+  font-size: 14px;
+  color: #555;
+}
+
+.detail-item strong {
+  color: #111;
+  margin-right: 6px;
+}
+
+.btn-cancel {
+  padding: 8px 12px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-cancel:hover {
+  background: #c82333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .citas-header {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .citas-header h1 {
+    font-size: 22px;
+  }
+
+  .btn-new-cita {
+    width: 100%;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .cita-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .citas-main {
+    padding: 12px;
+  }
+
+  .citas-form-container,
+  .citas-section {
+    padding: 12px;
+  }
+
+  .citas-header h1 {
+    font-size: 18px;
+  }
+
+  .cita-details {
+    gap: 6px;
+  }
+
+  .detail-item {
+    font-size: 13px;
+  }
+}

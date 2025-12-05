@@ -1,0 +1,4 @@
+/* o en App.css si no tienes archivo separado */
+.hero {
+  margin-top: 0; /* quita el espacio central */
+}

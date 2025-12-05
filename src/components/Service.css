@@ -1,0 +1,119 @@
+/* Servicio: grid de servicios y tarjetas */
+
+section#servicios{
+  padding: 36px 12px 56px;
+  background: #f7faf9;
+}
+
+.Titulo_S{
+  text-align: center;
+  font-size: 2rem;
+  color: #163b36;
+  margin: 0 0 18px 0;
+  font-weight: 700;
+}
+
+.container_S{
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 columnas en escritorio */
+    gap: 18px;
+    align-items: start;
+    box-sizing: border-box;
+    padding: 8px;
+    /* use automatic row heights so card content determine height; avoid forcing large stretching */
+      grid-auto-rows: auto;
+  }
+
+.Columna_S{
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(6, 29, 23, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+/* Imagenes dentro de las tarjetas: ajustar al ancho de la celda sin quedar gigantes */
+.thumb-wrapper{
+  width: 100%;
+  height: 160px; /* altura consistente para todas las miniaturas */
+  max-height: 160px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 12px; /* espacio entre imagen y contenido para alinear visualmente */
+  align-self: stretch; /* asegurar que el wrapper ocupe todo el ancho de la celda */
+}
+
+.thumb-wrapper img,
+.service-thumb{
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 160px;
+  object-fit: cover; /* recorta centrado manteniendo proporción */
+  display: block;
+}
+
+/* Asegurar que las columnas no centren verticalmente su contenido: imagen siempre en la parte superior */
+.Columna_S{
+  justify-content: flex-start;
+}
+
+/* Si quieres que las imágenes estén alineadas al fondo de las tarjetas en lugar de arriba,
+   cambia align-self en .thumb-wrapper a 'end' y descomenta la regla siguiente.
+ .thumb-wrapper{ align-self: end; } */
+
+/* Fallback: si hay imágenes sueltas dentro de la tarjeta sin wrapper */
+.Columna_S img{
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.Subtitulo_S{
+  margin: 0;
+  color: #194B44;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.Parrafo_S{
+  margin: 0;
+  color: #444;
+  line-height: 1.5;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+/* responsive: steps down from 5 -> 3 -> 2 -> 1 columns */
+@media (max-width: 1200px){
+  .container_S{
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 820px){
+  .container_S{
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (max-width: 480px){
+  .container_S{
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 420px){
+  section#servicios{ padding: 24px 10px 36px; }
+  .Titulo_S{ font-size: 1.5rem; }
+  .Columna_S{ padding: 14px; }
+}
