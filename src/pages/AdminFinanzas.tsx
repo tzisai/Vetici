@@ -15,7 +15,7 @@ export default function AdminFinanzas(): JSX.Element {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from('products').select('*');
+      const { data, error } = await supabase.from('products').select('*').not('is_deleted', 'is', true);
       if (error) throw error;
       setProducts(data || []);
     } catch (err: any) {

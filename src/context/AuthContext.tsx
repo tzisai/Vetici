@@ -17,6 +17,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   loading: boolean;
+  needsPasswordReset: boolean;
   signOut: () => Promise<void>;
   logout: () => Promise<void>; // Añadimos el alias para compatibilidad
 }
@@ -29,6 +30,7 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isAdmin: false,
   loading: true,
+  needsPasswordReset: false,
   signOut: async () => {},
   logout: async () => {}, // Añadimos el alias para compatibilidad
 });
@@ -47,6 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [needsPasswordReset, setNeedsPasswordReset] = useState(false);
 
   useEffect(() => {
     // onAuthStateChange se ejecuta en la carga inicial y en cada cambio de sesión (login/logout)
@@ -54,7 +57,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setSession(session);
       setProfile(null); // Limpia el perfil anterior
 
-      if (event === 'SIGNED_IN' && session) {
+      if (event === 'PASSWORD_RECOVERY') {
+        setNeedsPasswordReset(true);
+      } else if (event === 'SIGNED_IN' && session) {
+        setNeedsPasswordReset(false);
         try {
           const { data: userProfile, error } = await supabase.from('profiles').select('id, name, role').eq('id', session.user.id).single();
           if (error) throw error;
@@ -94,6 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated: !!session?.user,
     isAdmin: profile?.role === 'ADMIN',
     loading,
+    needsPasswordReset,
     signOut,
     logout: signOut, // Hacemos que logout llame a signOut
   };

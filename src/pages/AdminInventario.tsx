@@ -61,7 +61,7 @@ export default function AdminInventario(): JSX.Element {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from('products').select('*').order('name', { ascending: true });
+      const { data, error } = await supabase.from('products').select('*').not('is_deleted', 'is', true).order('name', { ascending: true });
       if (error) throw error;
       setProducts(data || []);
     } catch (err: any) {
@@ -93,7 +93,7 @@ export default function AdminInventario(): JSX.Element {
   const confirmDelete = async () => {
     if (!productToDelete) return;
     try {
-      const { error } = await supabase.from('products').delete().eq('id', productToDelete);
+      const { error } = await supabase.from('products').update({ is_deleted: true }).eq('id', productToDelete);
       if (error) throw error;
       setProducts(products.filter(p => p.id !== productToDelete));
     } catch (err: any) {

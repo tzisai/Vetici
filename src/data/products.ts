@@ -9,6 +9,7 @@ export type Product = {
   sold?: number; // units sold (for realized profit)
   image?: string; // product image URL
   rating?: number; // 0-5 stars
+  is_deleted?: boolean;
 };
 
 const products: Product[] = [

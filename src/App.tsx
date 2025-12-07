@@ -21,6 +21,8 @@ import AdminPedidos from './pages/AdminPedidos';
 import AdminProveedores from './pages/AdminProveedores';
 import AdminHome from './pages/AdminHome';
 import UserHome from './pages/UserHome';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 export default function App(): JSX.Element {
   const [route, setRoute] = useState<string>(window.location.hash || '#home');
@@ -31,12 +33,13 @@ export default function App(): JSX.Element {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const { isAuthenticated, isAdmin } = useContext(AuthContext);
+  const { isAuthenticated, isAdmin, needsPasswordReset } = useContext(AuthContext);
 
   const routes: { [key: string]: { component: JSX.Element; auth: 'public' | 'user' | 'admin' } } = {
     '#login': { component: <Login />, auth: 'public' },
     '#signup': { component: <Register />, auth: 'public' },
     '#register': { component: <Register />, auth: 'public' },
+    '#recover': { component: <ForgotPassword />, auth: 'public' },
     '#productos': { component: <Products />, auth: 'public' },
     '#mis-mascotas': { component: <MisMascotas />, auth: 'user' },
     '#mis-citas': { component: <Citas />, auth: 'user' },
@@ -52,6 +55,10 @@ export default function App(): JSX.Element {
   };
 
   const renderRoute = () => {
+    if (needsPasswordReset) {
+      return <ResetPassword />;
+    }
+    
     if (route === '#home' || route === '') {
       if (isAuthenticated) {
         return isAdmin ? <AdminHome /> : <UserHome />;

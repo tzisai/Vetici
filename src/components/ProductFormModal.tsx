@@ -24,6 +24,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product }: P
   const [suppliers, setSuppliers] = useState<Supplier[]>([]); // State for suppliers
   const [loadingSuppliers, setLoadingSuppliers] = useState(true);
   const [suppliersError, setSuppliersError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -42,6 +43,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product }: P
 
     if (isOpen) {
       fetchSuppliers();
+      setValidationError(null); // Reset validation error on open
     }
   }, [isOpen]);
 
@@ -78,6 +80,11 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product }: P
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (Number(formData.price) <= Number(formData.cost)) {
+      setValidationError('El precio de venta debe ser mayor que el costo.');
+      return;
+    }
+    setValidationError(null);
     onSave(formData);
   };
 
@@ -96,11 +103,11 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product }: P
           </div>
           <div className="form-group">
             <label htmlFor="price">Precio</label>
-            <input type="number" id="price" name="price" value={formData.price} onChange={handleChange} required />
+            <input type="number" step="0.01" id="price" name="price" value={formData.price} onChange={handleChange} required />
           </div>
           <div className="form-group">
             <label htmlFor="cost">Costo</label>
-            <input type="number" id="cost" name="cost" value={formData.cost} onChange={handleChange} required />
+            <input type="number" step="0.01" id="cost" name="cost" value={formData.cost} onChange={handleChange} required />
           </div>
           <div className="form-group">
             <label htmlFor="stock">Stock</label>
@@ -127,6 +134,9 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product }: P
             <label htmlFor="image">URL de Imagen</label>
             <input type="text" id="image" name="image" value={formData.image} onChange={handleChange} />
           </div>
+          
+          {validationError && <p className="error-message" style={{color: 'red', marginTop: '1rem'}}>{validationError}</p>}
+
           <div className="modal-actions">
             <button type="button" onClick={onClose} className="btn-cancel">Cancelar</button>
             <button type="submit" className="btn-confirm">Guardar</button>
