@@ -71,22 +71,22 @@ const AdminHome: React.FC = () => {
                     <div className="nav-card">
                         <img src="/src/assets/imgs/productos_img.jpg" alt="Inventario" />
                         <h3>Inventario</h3>
-                        <a href="#/admin/inventario" className="nav-button">Ir allí</a>
+                        <a href="#inventario" className="nav-button">Ir allí</a>
                     </div>
                     <div className="nav-card">
                         <img src="/src/assets/imgs/cirugia.jpg" alt="Agenda" />
                         <h3>Agenda</h3>
-                        <a href="#/admin/agenda" className="nav-button">Ir allí</a>
+                        <a href="#agenda" className="nav-button">Ir allí</a>
                     </div>
                     <div className="nav-card">
                         <img src="/src/assets/imgs/estetica.jpg" alt="Expedientes" />
                         <h3>Expedientes</h3>
-                        <a href="#/admin/expedientes" className="nav-button">Ir allí</a>
+                        <a href="#expedientes" className="nav-button">Ir allí</a>
                     </div>
                     <div className="nav-card">
                         <img src="/src/assets/imgs/homeP.jpg" alt="Finanzas" />
                         <h3>Finanzas</h3>
-                        <a href="#/admin/finanzas" className="nav-button">Ir allí</a>
+                        <a href="#finanzas" className="nav-button">Ir allí</a>
                     </div>
                 </div>
             </div>

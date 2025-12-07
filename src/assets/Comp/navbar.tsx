@@ -56,8 +56,7 @@ export default function Navbar(): JSX.Element {
                                     <>
                                         <a href="#inicio">Inicio</a>
                                         <a href="#inventario">Inventario</a>
-                                        <a href="#pedidos">Pedidos</a>
-                                        <a href="#proveedores">Proveedores</a>
+
                                         <a href="#agenda">Agenda</a>
                                         <a href="#expedientes">Expedientes</a>
                                         <a href="#finanzas">Finanzas</a>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Product } from '../data/products';
+import { supabase } from '../supabaseclient'; // Import supabase
+import type { Supplier } from '../data/suppliers'; // Import Supplier type
 import './productFormModal.css';
 
 interface ProductFormModalProps {
@@ -19,6 +21,29 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product }: P
     supplier: '',
     image: '',
   });
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]); // State for suppliers
+  const [loadingSuppliers, setLoadingSuppliers] = useState(true);
+  const [suppliersError, setSuppliersError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      setLoadingSuppliers(true);
+      setSuppliersError(null);
+      try {
+        const { data, error } = await supabase.from('suppliers').select('id, name').order('name', { ascending: true });
+        if (error) throw error;
+        setSuppliers(data || []);
+      } catch (err: any) {
+        setSuppliersError(err.message);
+      } finally {
+        setLoadingSuppliers(false);
+      }
+    };
+
+    if (isOpen) {
+      fetchSuppliers();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (product) {
@@ -38,15 +63,15 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product }: P
         price: 0,
         cost: 0,
         stock: 0,
-        supplier: '',
+        supplier: suppliers.length > 0 ? suppliers[0].name : '', // Default to first supplier if available
         image: '',
       });
     }
-  }, [product]);
+  }, [product, suppliers]); // Re-run when suppliers change
 
   if (!isOpen) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -83,7 +108,20 @@ export default function ProductFormModal({ isOpen, onClose, onSave, product }: P
           </div>
           <div className="form-group">
             <label htmlFor="supplier">Proveedor</label>
-            <input type="text" id="supplier" name="supplier" value={formData.supplier} onChange={handleChange} required />
+            {loadingSuppliers ? (
+              <p>Cargando proveedores...</p>
+            ) : suppliersError ? (
+              <p className="error-message">Error al cargar proveedores: {suppliersError}</p>
+            ) : suppliers.length > 0 ? (
+              <select id="supplier" name="supplier" value={formData.supplier} onChange={handleChange} required>
+                <option value="">Seleccione un proveedor</option>
+                {suppliers.map(s => (
+                  <option key={s.id} value={s.name}>{s.name}</option>
+                ))}
+              </select>
+            ) : (
+              <p>No hay proveedores disponibles. Agregue proveedores en la sección de proveedores.</p>
+            )}
           </div>
           <div className="form-group">
             <label htmlFor="image">URL de Imagen</label>

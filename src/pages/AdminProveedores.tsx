@@ -5,34 +5,6 @@ import SupplierFormModal from '../components/SupplierFormModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import './adminproveedores.css';
 
-// A simpler card component to display supplier info
-const SupplierCard = ({
-  supplier,
-  onEdit,
-  onDelete,
-}: {
-  supplier: Supplier;
-  onEdit: (supplier: Supplier) => void;
-  onDelete: (supplierId: string) => void;
-}) => {
-  return (
-    <div className="proveedor-card">
-      <h3>{supplier.name}</h3>
-      {supplier.contact_name && <p><strong>Contacto:</strong> {supplier.contact_name}</p>}
-      {supplier.phone && <p><strong>Teléfono:</strong> {supplier.phone}</p>}
-      {supplier.email && <p><strong>Email:</strong> {supplier.email}</p>}
-      <div className="proveedor-card-actions">
-        <button onClick={() => onEdit(supplier)} className="btn-edit">
-          Editar
-        </button>
-        <button onClick={() => onDelete(supplier.id)} className="btn-delete">
-          Eliminar
-        </button>
-      </div>
-    </div>
-  );
-};
-
 export default function AdminProveedores(): JSX.Element {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,29 +97,54 @@ export default function AdminProveedores(): JSX.Element {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <main className="admin-proveedores-main">
+    <div className="admin-proveedores-container">
       <div className="admin-proveedores-header">
+        <button className="btn-regresar" onClick={() => window.location.hash = '#inventario'}>
+          Regresar
+        </button>
         <div className="admin-proveedores-title">
+
           <h1>Gestión de Proveedores</h1>
           <p>Administra los proveedores de tus productos.</p>
         </div>
         <div className="admin-proveedores-actions">
-          <button onClick={handleAdd} className="btn-add-proveedor">
+          <button onClick={handleAdd} className="admin-proveedores-add-button">
             + Agregar Proveedor
           </button>
         </div>
       </div>
 
-      <div className="proveedores-grid">
+      <div className="admin-proveedores-table-container">
         {suppliers.length > 0 ? (
-          suppliers.map(supplier => (
-            <SupplierCard
-              key={supplier.id}
-              supplier={supplier}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))
+          <table className="admin-proveedores-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Contacto</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {suppliers.map(supplier => (
+                <tr key={supplier.id}>
+                  <td>{supplier.name}</td>
+                  <td>{supplier.contact_name || 'N/A'}</td>
+                  <td>{supplier.phone || 'N/A'}</td>
+                  <td>{supplier.email || 'N/A'}</td>
+                  <td className="admin-proveedores-actions">
+                    <button onClick={() => handleEdit(supplier)} className="admin-proveedores-action-button edit">
+                      Editar
+                    </button>
+                    <button onClick={() => handleDelete(supplier.id)} className="admin-proveedores-action-button delete">
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p>No hay proveedores registrados. ¡Agrega uno nuevo!</p>
         )}
@@ -167,6 +164,6 @@ export default function AdminProveedores(): JSX.Element {
         title="Confirmar Eliminación"
         message="¿Estás seguro de que quieres eliminar este proveedor? Esta acción no se puede deshacer y podría afectar pedidos existentes."
       />
-    </main>
+    </div>
   );
 }

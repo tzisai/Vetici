@@ -92,3 +92,22 @@
 .btn-reponer-inventario:hover {
   background-color: #2a6a5f;
 }
+
+.admin-inventario-actions .btn-inventario-action {
+  background-color: #007bff; /* A standard blue, similar to btn-add-product */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none; /* Important for <a> tags */
+  display: inline-block; /* Allow padding and sizing */
+  margin-left: 10px; /* Space between buttons */
+}
+
+.admin-inventario-actions .btn-inventario-action:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}

@@ -48,6 +48,7 @@ export default function App(): JSX.Element {
     '#inventario': { component: <AdminInventario />, auth: 'admin' },
     '#pedidos': { component: <AdminPedidos />, auth: 'admin' },
     '#proveedores': { component: <AdminProveedores />, auth: 'admin' },
+
   };
 
   const renderRoute = () => {

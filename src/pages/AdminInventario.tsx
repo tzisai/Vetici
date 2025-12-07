@@ -153,9 +153,12 @@ export default function AdminInventario(): JSX.Element {
           <p>Gestiona el stock de tus productos.</p>
         </div>
         <div className="admin-inventario-actions">
-          <button onClick={handleMakeOrder} className="btn-make-order">
-            Hacer Pedido
-          </button>
+          <a href="#pedidos" className="btn-inventario-action">
+            Ver Pedidos
+          </a>
+          <a href="#proveedores" className="btn-inventario-action">
+            Gestionar Proveedores
+          </a>
           <button onClick={handleAdd} className="btn-add-product">
             + Agregar Producto
           </button>

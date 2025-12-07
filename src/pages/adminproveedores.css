@@ -1,273 +1,210 @@
-.admin-proveedores-main {
-    padding: 20px;
-    background-color: var(--color-background-light);
-    min-height: calc(100vh - var(--header-height, 60px) - var(--footer-height, 60px)); /* Adjust based on actual header/footer height */
+/* src/pages/adminproveedores.css */
+
+.btn-regresar {
+  background-color: #6c757d; /* A neutral color for "back" */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-right: 10px; /* Space between "Regresar" and other elements */
+}
+
+.btn-regresar:hover {
+  background-color: #5a6268;
+}
+
+.admin-proveedores-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 60px); /* Adjust based on your header/footer height */
+  font-family: 'Arial', sans-serif;
 }
 
 .admin-proveedores-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 15px;
 }
 
-.admin-proveedores-title h1 {
-    font-size: 2.2em;
-    color: var(--color-primary-dark);
-    margin-bottom: 5px;
+.admin-proveedores-header h1 {
+  color: #343a40;
+  font-size: 2.5em;
+  margin: 0;
+}
+td{
+  color: black;
 }
 
-.admin-proveedores-title p {
-    font-size: 1em;
-    color: var(--color-text-secondary);
+.admin-proveedores-add-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.btn-add-proveedor {
-    background-color: var(--color-accent);
-    color: var(--color-white);
-    padding: 10px 20px;
-    border: none;
-    border-radius: var(--border-radius-small);
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.admin-proveedores-add-button:hover {
+  background-color: #0056b3;
 }
 
-.btn-add-proveedor:hover {
-    background-color: var(--color-accent-dark);
+.admin-proveedores-table-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
 }
 
-.proveedores-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+.admin-proveedores-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
 }
 
-/* Supplier Card Styles */
-.proveedor-card {
-    background-color: var(--color-white);
-    border-radius: var(--border-radius-medium);
-    box-shadow: var(--shadow-elevation-1);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.admin-proveedores-table th,
+.admin-proveedores-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e9ecef;
 }
 
-.proveedor-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-elevation-2);
+.admin-proveedores-table th {
+  background-color: #e2e6ea;
+  color: #495057;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9em;
 }
 
-.proveedor-card h3 {
-    font-size: 1.5em;
-    color: var(--color-primary);
-    margin-bottom: 10px;
+.admin-proveedores-table tbody tr:hover {
+  background-color: #f1f3f5;
 }
 
-.proveedor-card p {
-    font-size: 0.95em;
-    color: var(--color-text-secondary);
-    margin-bottom: 5px;
+.admin-proveedores-actions {
+  display: flex;
+  gap: 10px;
 }
 
-.proveedor-card-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
+.admin-proveedores-action-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
 }
 
-.proveedor-card-actions .btn-edit,
-.proveedor-card-actions .btn-delete {
-    padding: 8px 15px;
-    border: none;
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.3s ease;
+.admin-proveedores-action-button.edit {
+  background-color: #ffc107; /* Warning yellow */
 }
 
-.proveedor-card-actions .btn-edit {
-    background-color: var(--color-secondary);
-    color: var(--color-white);
+.admin-proveedores-action-button.edit:hover {
+  background-color: #e0a800;
 }
 
-.proveedor-card-actions .btn-edit:hover {
-    background-color: var(--color-secondary-dark);
+.admin-proveedores-action-button.delete {
+  background-color: #dc3545; /* Danger red */
 }
 
-.proveedor-card-actions .btn-delete {
-    background-color: var(--color-danger);
-    color: var(--color-white);
+.admin-proveedores-action-button.delete:hover {
+  background-color: #c82333;
 }
 
-.proveedor-card-actions .btn-delete:hover {
-    background-color: var(--color-danger-dark);
+.admin-proveedores-action-button:hover {
+  background-color: #5a6268;
 }
 
-/* Modal Styles (for Add/Edit Supplier) - Reusing existing modal styles for consistency */
-/* Assuming you have general modal styles (e.g., in index.css or a global style file) */
-/* If not, these will need to be defined or sourced from existing modal components like productFormModal.css */
-/* For now, I'll add basic overrides if needed, but aim to reuse existing patterns */
-
-/* Example basic modal styles - adjust as needed based on project specifics */
-.supplier-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+/* Optional: Styling for modals if they are part of this page */
+.supplier-form-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-.supplier-modal-content {
-    background: var(--color-white);
-    padding: 30px;
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--shadow-elevation-3);
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    animation: fadeIn 0.3s ease-out;
+.supplier-form-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+.supplier-form-modal-content h2 {
+  margin-top: 0;
+  color: #343a40;
+  text-align: center;
+  margin-bottom: 25px;
 }
 
-.supplier-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 10px;
+.supplier-form-modal-content form div {
+  margin-bottom: 15px;
 }
 
-.supplier-modal-header h2 {
-    font-size: 1.8em;
-    color: var(--color-primary-dark);
+.supplier-form-modal-content label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #495057;
 }
 
-.supplier-modal-close-btn {
-    background: none;
-    border: none;
-    font-size: 1.8em;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    transition: color 0.2s ease;
+.supplier-form-modal-content input[type="text"],
+.supplier-form-modal-content input[type="email"],
+.supplier-form-modal-content input[type="tel"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1em;
 }
 
-.supplier-modal-close-btn:hover {
-    color: var(--color-primary);
+.supplier-form-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.supplier-form-group {
-    margin-bottom: 15px;
+.supplier-form-modal-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
 }
 
-.supplier-form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: var(--color-text-primary);
+.supplier-form-modal-actions .save-button {
+  background-color: #28a745; /* Success green */
+  color: white;
 }
 
-.supplier-form-group input,
-.supplier-form-group textarea {
-    width: calc(100% - 20px); /* Adjust for padding */
-    padding: 10px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-small);
-    font-size: 1em;
-    color: var(--color-text-primary);
-    transition: border-color 0.2s ease;
+.supplier-form-modal-actions .save-button:hover {
+  background-color: #218838;
 }
 
-.supplier-form-group input:focus,
-.supplier-form-group textarea:focus {
-    border-color: var(--color-primary);
-    outline: none;
+.supplier-form-modal-actions .cancel-button {
+  background-color: #6c757d; /* Secondary gray */
+  color: white;
 }
 
-.supplier-modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 25px;
-    padding-top: 15px;
-    border-top: 1px solid var(--color-border);
-}
-
-.supplier-modal-btn-cancel {
-    background-color: var(--color-grey-light);
-    color: var(--color-text-primary);
-    padding: 10px 20px;
-    border: none;
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.supplier-modal-btn-cancel:hover {
-    background-color: var(--color-grey-medium);
-}
-
-.supplier-modal-btn-save {
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    padding: 10px 20px;
-    border: none;
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.supplier-modal-btn-save:hover {
-    background-color: var(--color-primary-dark);
-}
-
-.supplier-modal-btn-save:disabled {
-    background-color: var(--color-grey-light);
-    cursor: not-allowed;
-}
-
-.supplier-error-message {
-    color: var(--color-danger);
-    background-color: var(--color-danger-light);
-    border: 1px solid var(--color-danger);
-    padding: 10px;
-    border-radius: var(--border-radius-small);
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .admin-proveedores-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .admin-proveedores-actions {
-        width: 100%;
-        margin-top: 15px;
-    }
-
-    .btn-add-proveedor {
-        width: 100%;
-        text-align: center;
-    }
-
-    .proveedores-grid {
-        grid-template-columns: 1fr;
-    }
+.supplier-form-modal-actions .cancel-button:hover {
+  background-color: #5a6268;
 }
