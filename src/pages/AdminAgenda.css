@@ -1,154 +1,101 @@
 .admin-agenda-container {
-  padding: 20px;
-  max-width: 900px;
-  margin: 0 auto;
-  font-family: 'Arial', sans-serif;
-}
-
-.admin-agenda-container h1 {
-  color: #ffffff;
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.appointment-list {
-  display: grid;
-  gap: 20px;
-}
-
-.appointment-card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  border-left: 5px solid;
-  transition: transform 0.2s ease-in-out;
-}
-
-.appointment-card:hover {
-  transform: translateY(-5px);
-}
-
-.appointment-card.status-confirmada {
-  border-left-color: #4CAF50; /* Green */
-}
-
-.appointment-card.status-pendiente {
-  border-left-color: #FFC107; /* Amber/Yellow */
-}
-
-.appointment-card.status-cancelada {
-  border-left-color: #F44336; /* Red */
-  opacity: 0.7;
-}
-
-.appointment-card.status-completada {
-  border-left-color: #2196F3; /* Blue */
-}
-
-.appointment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.appointment-header h2 {
-  margin: 0;
-  color: #555;
-  font-size: 1.2em;
-}
-
-.appointment-status {
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 0.8em;
-  font-weight: bold;
-  color: #fff;
-}
-
-.appointment-status.status-confirmada {
-  background-color: #4CAF50;
-}
-
-.appointment-status.status-pendiente {
-  background-color: #FFC107;
-}
-
-.appointment-status.status-cancelada {
-  background-color: #F44336;
-}
-
-.appointment-status.status-completada {
-  background-color: #2196F3;
-}
-
-.appointment-card p {
-  margin: 5px 0;
-  color: #666;
-  font-size: 0.95em;
-}
-
-.appointment-card p strong {
-  color: #333;
-}
-
-.appointment-actions {
-  margin-top: 15px;
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.appointment-actions button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.9em;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-.btn-reschedule {
-  background-color: #FFC107; /* Amber */
-  color: #333;
-}
-
-.btn-reschedule:hover {
-  background-color: #e0a800;
-}
-
-.btn-cancel {
-  background-color: #F44336; /* Red */
-  color: white;
-}
-
-.btn-cancel:hover {
-  background-color: #da190b;
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .admin-agenda-container {
-    padding: 10px;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: sans-serif;
   }
-
+  
+  .admin-agenda-container h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #ffffff;
+  }
+  
+  .appointment-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .appointment-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    border-left: 5px solid #ccc;
+  }
+  
   .appointment-header {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
   }
-
+  
   .appointment-header h2 {
-    margin-bottom: 5px;
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
   }
-
+  
+  .appointment-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+  }
+  
+  /* Status Colors */
+  .appointment-card.status-pendiente { border-left-color: #f59e0b; }
+  .appointment-card.status-confirmada { border-left-color: #3b82f6; }
+  .appointment-card.status-completada { border-left-color: #10b981; }
+  .appointment-card.status-cancelada { border-left-color: #ef4444; background-color: #fef2f2; }
+  
+  .appointment-status.status-pendiente { background-color: #f59e0b; }
+  .appointment-status.status-confirmada { background-color: #3b82f6; }
+  .appointment-status.status-completada { background-color: #10b981; }
+  .appointment-status.status-cancelada { background-color: #ef4444; }
+  
+  .appointment-card p {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+  
   .appointment-actions {
-    flex-direction: column;
-    gap: 5px;
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
   }
-
+  
   .appointment-actions button {
-    width: 100%;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
   }
-}
+  
+  .btn-confirm { background-color: #2563eb; color: white; }
+  .btn-confirm:hover { background-color: #1d4ed8; }
+  
+  .btn-complete { background-color: #059669; color: white; }
+  .btn-complete:hover { background-color: #047857; }
+  
+  .btn-edit { background-color: #6b7280; color: white; }
+  .btn-edit:hover { background-color: #4b5563; }
+  
+  .btn-cancel { background-color: #e11d48; color: white; }
+  .btn-cancel:hover { background-color: #be123c; }
+  
+  .empty-msg {
+      text-align: center;
+      padding: 2rem;
+      color: #6b7280;
+  }
+  

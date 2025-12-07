@@ -8,24 +8,25 @@ export type AppointmentType =
 
 export type Appointment = {
   id: string;
-  userId: string;
-  petId: string;
-  petName: string;
+  user_id: string;
+  pet_id: string;
   type: AppointmentType;
   date: string; // ISO date string
   time: string; // HH:mm format
   veterinarian?: string;
   notes?: string;
   status: 'PENDIENTE' | 'CONFIRMADA' | 'COMPLETADA' | 'CANCELADA';
-  createdAt: string;
+  created_at: string;
+  // This is not in the table, but useful for display
+  petName?: string; 
 };
 
 // Mock appointments data
 const appointments: Appointment[] = [
   {
     id: 'APT001',
-    userId: 'user1',
-    petId: 'pet1',
+    user_id: 'user1',
+    pet_id: 'pet1',
     petName: 'Max',
     type: 'CHEQUEO_MEDICO',
     date: '2025-12-10',
@@ -33,12 +34,12 @@ const appointments: Appointment[] = [
     veterinarian: 'Dra. María López',
     notes: 'Chequeo general anual',
     status: 'CONFIRMADA',
-    createdAt: '2025-12-01',
+    created_at: '2025-12-01',
   },
   {
     id: 'APT002',
-    userId: 'user1',
-    petId: 'pet2',
+    user_id: 'user1',
+    pet_id: 'pet2',
     petName: 'Luna',
     type: 'ESTETICA',
     date: '2025-12-15',
@@ -46,12 +47,12 @@ const appointments: Appointment[] = [
     veterinarian: 'Dr. Carlos García',
     notes: 'Baño y corte de uñas',
     status: 'CONFIRMADA',
-    createdAt: '2025-12-01',
+    created_at: '2025-12-01',
   },
   {
     id: 'APT003',
-    userId: 'user1',
-    petId: 'pet1',
+    user_id: 'user1',
+    pet_id: 'pet1',
     petName: 'Max',
     type: 'VACUNACION',
     date: '2025-12-20',
@@ -59,7 +60,7 @@ const appointments: Appointment[] = [
     veterinarian: 'Dra. María López',
     notes: 'Vacuna triple',
     status: 'PENDIENTE',
-    createdAt: '2025-12-01',
+    created_at: '2025-12-01',
   },
 ];
 

@@ -1,12 +1,34 @@
-import React from 'react';
-import products from '../data/products';
-import './AdminFinanzas.css'; // Import new styles
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../supabaseclient';
+import type { Product } from '../data/products';
+import './AdminFinanzas.css';
 
 function currency(n: number) {
   return `${n.toFixed(2)}`;
 }
 
 export default function AdminFinanzas(): JSX.Element {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string|null>(null);
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.from('products').select('*');
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
   const productData = products.map(p => {
     const margin = p.price - p.cost;
     return {
@@ -20,6 +42,9 @@ export default function AdminFinanzas(): JSX.Element {
   const totalPotential = productData.reduce((s, r) => s + r.potentialProfit, 0);
   const totalRealized = productData.reduce((s, r) => s + r.realizedProfit, 0);
   const totalStockValue = products.reduce((sum, p) => sum + (p.stock * p.cost), 0);
+
+  if(loading) return <div>Cargando datos financieros...</div>
+  if(error) return <div>Error: {error}</div>
 
   return (
     <main className="admin-finanzas-main">
@@ -63,6 +88,7 @@ export default function AdminFinanzas(): JSX.Element {
               <th>Precio</th>
               <th>Margen</th>
               <th>Stock</th>
+              <th>Vendido</th>
               <th>Ganancia Potencial</th>
               <th>Ganancia Realizada</th>
             </tr>
@@ -86,6 +112,7 @@ export default function AdminFinanzas(): JSX.Element {
                   {currency(p.margin)}
                 </td>
                 <td>{p.stock} unidades</td>
+                <td>{p.sold ?? 0} unidades</td>
                 <td className="currency">{currency(p.potentialProfit)}</td>
                 <td className="currency profit-positive">{currency(p.realizedProfit)}</td>
               </tr>

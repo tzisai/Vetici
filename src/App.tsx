@@ -19,6 +19,8 @@ import AdminFinanzas from './pages/AdminFinanzas';
 import AdminInventario from './pages/AdminInventario';
 import AdminPedidos from './pages/AdminPedidos';
 import AdminProveedores from './pages/AdminProveedores';
+import AdminHome from './pages/AdminHome';
+import UserHome from './pages/UserHome';
 
 export default function App(): JSX.Element {
   const [route, setRoute] = useState<string>(window.location.hash || '#home');
@@ -31,60 +33,55 @@ export default function App(): JSX.Element {
 
   const { isAuthenticated, isAdmin } = useContext(AuthContext);
 
+  const routes: { [key: string]: { component: JSX.Element; auth: 'public' | 'user' | 'admin' } } = {
+    '#login': { component: <Login />, auth: 'public' },
+    '#signup': { component: <Register />, auth: 'public' },
+    '#register': { component: <Register />, auth: 'public' },
+    '#productos': { component: <Products />, auth: 'public' },
+    '#mis-mascotas': { component: <MisMascotas />, auth: 'user' },
+    '#mis-citas': { component: <Citas />, auth: 'user' },
+    '#citas': { component: <Citas />, auth: 'user' },
+    '#micuenta': { component: <MyAccount />, auth: 'user' },
+    '#agenda': { component: <AdminAgenda />, auth: 'admin' },
+    '#expedientes': { component: <AdminExpedientes />, auth: 'admin' },
+    '#finanzas': { component: <AdminFinanzas />, auth: 'admin' },
+    '#inventario': { component: <AdminInventario />, auth: 'admin' },
+    '#pedidos': { component: <AdminPedidos />, auth: 'admin' },
+    '#proveedores': { component: <AdminProveedores />, auth: 'admin' },
+  };
+
   const renderRoute = () => {
-    // public routes
-    if (route === '#login') return <Login />;
-    if (route === '#signup' || route === '#register') return <Register />;
-    if (route === '#productos') return <Products />;
-
-    // protected user routes
-    if (route === '#mis-mascotas') {
-      if (!isAuthenticated) { window.location.hash = '#login'; return null; }
-      return <MisMascotas />;
-    }
-    if (route === '#mis-citas' || route === '#citas') {
-      if (!isAuthenticated) { window.location.hash = '#login'; return null; }
-      return <Citas />;
-    }
-    if (route === '#cuenta' || route === '#mi-cuenta') {
-      if (!isAuthenticated) { window.location.hash = '#login'; return null; }
-      return <MyAccount />;
+    if (route === '#home' || route === '') {
+      if (isAuthenticated) {
+        return isAdmin ? <AdminHome /> : <UserHome />;
+      }
+      return (
+        <>
+          <Hero />
+          <About />
+          <Service_H />
+        </>
+      );
     }
 
-    // admin routes
-    if (route === '#agenda') {
-      if (!isAuthenticated || !isAdmin) { window.location.hash = '#login'; return null; }
-      return <AdminAgenda />;
-    }
-    if (route === '#expedientes') {
-      if (!isAuthenticated || !isAdmin) { window.location.hash = '#login'; return null; }
-      return <AdminExpedientes />;
-    }
-    if (route === '#finanzas') {
-      if (!isAuthenticated || !isAdmin) { window.location.hash = '#login'; return null; }
-      return <AdminFinanzas />;
-    }
-    if (route === '#inventario') {
-      if (!isAuthenticated || !isAdmin) { window.location.hash = '#login'; return null; }
-      return <AdminInventario />;
-    }
-    if (route === '#pedidos') {
-      if (!isAuthenticated || !isAdmin) { window.location.hash = '#login'; return null; }
-      return <AdminPedidos />;
-    }
-    if (route === '#proveedores') {
-      if (!isAuthenticated || !isAdmin) { window.location.hash = '#login'; return null; }
-      return <AdminProveedores />;
+    const currentRoute = routes[route];
+
+    if (currentRoute) {
+      const { component, auth } = currentRoute;
+      if (auth === 'user' && !isAuthenticated) {
+        window.location.hash = '#login';
+        return null;
+      }
+      if (auth === 'admin' && (!isAuthenticated || !isAdmin)) {
+        window.location.hash = '#login';
+        return null;
+      }
+      return component;
     }
 
-    // default: homepage
-    return (
-      <>
-        <Hero />
-        <About />
-        <Service_H />
-      </>
-    );
+    // Fallback for any other route, redirect to home
+    window.location.hash = '#home';
+    return null;
   };
 
   return (

@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import petData from '../data/pets';
-import usersData from '../data/users';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { supabase } from '../supabaseclient';
 import type { User } from '../data/users';
 import type { Pet, MedicalRecord } from '../data/pets';
 import { SPECIES_LABELS } from '../data/pets';
@@ -23,7 +22,7 @@ const RecordFormModal = ({
   record: MedicalRecord | Partial<MedicalRecord>;
   pet: Pet;
   onClose: () => void;
-  onSave: (updatedRecord: MedicalRecord) => void;
+  onSave: (updatedRecord: Partial<MedicalRecord>) => void;
 }) => {
   const [formData, setFormData] = useState<Partial<MedicalRecord>>(record);
 
@@ -33,15 +32,7 @@ const RecordFormModal = ({
   };
 
   const handleSave = () => {
-    const newRecord: MedicalRecord = {
-      ...formData,
-      id: formData.id || `rec_${Date.now()}`,
-      petId: pet.id,
-      date: formData.date || new Date().toISOString(),
-      type: formData.type || 'Consulta',
-      status: 'COMPLETADO',
-    };
-    onSave(newRecord);
+    onSave(formData);
   };
 
   return (
@@ -145,23 +136,54 @@ const RecordFormModal = ({
 
 
 export default function AdminExpedientes(): JSX.Element {
-  const [pets, setPets] = useState<Pet[]>(petData.pets);
-  const [records, setRecords] = useState<MedicalRecord[]>(petData.medicalRecords);
-  const [users, setUsers] = useState<User[]>(usersData);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const [profiles, setProfiles] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string|null>(null);
+
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingRecord, setEditingRecord] = useState<MedicalRecord | Partial<MedicalRecord> | null>(null);
 
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [petsRes, profilesRes, recordsRes] = await Promise.all([
+        supabase.from('pets').select('*'),
+        supabase.from('profiles').select('*'),
+        supabase.from('medical_records').select('*'),
+      ]);
+
+      if (petsRes.error) throw petsRes.error;
+      if (profilesRes.error) throw profilesRes.error;
+      if (recordsRes.error) throw recordsRes.error;
+
+      setPets(petsRes.data || []);
+      setProfiles(profilesRes.data || []);
+      setRecords(recordsRes.data || []);
+
+    } catch(err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   const filteredPets = useMemo(() => {
     const petWithOwner = pets.map(p => {
-      const owner = users.find(u => u.id === p.userId);
+      const owner = profiles.find(u => u.id === p.user_id);
       return { ...p, ownerName: owner?.name || 'N/A' };
     });
     return petWithOwner.filter(p =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.ownerName.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [pets, users, searchTerm]);
+  }, [pets, profiles, searchTerm]);
 
   const selectedPet = useMemo(() =>
     pets.find(p => p.id === selectedPetId),
@@ -169,32 +191,57 @@ export default function AdminExpedientes(): JSX.Element {
   );
   
   const owner = useMemo(() =>
-    users.find(u => u.id === selectedPet?.userId),
-    [users, selectedPet]
+    profiles.find(u => u.id === selectedPet?.user_id),
+    [profiles, selectedPet]
   );
 
   const selectedPetRecords = useMemo(() =>
     records
-      .filter(r => r.petId === selectedPetId)
+      .filter(r => r.pet_id === selectedPetId)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
     [records, selectedPetId]
   );
 
-  const handleSaveRecord = (updatedRecord: MedicalRecord) => {
-    setRecords(prev => {
-      const existing = prev.find(r => r.id === updatedRecord.id);
-      if (existing) {
-        return prev.map(r => r.id === updatedRecord.id ? updatedRecord : r);
-      }
-      return [updatedRecord, ...prev];
-    });
-    setEditingRecord(null);
+  const handleSaveRecord = async (formData: Partial<MedicalRecord>) => {
+    if (!selectedPet) return;
+    try {
+        if (formData.id) {
+            // Update
+            const { data, error } = await supabase
+                .from('medical_records')
+                .update({ ...formData, status: 'COMPLETADO' })
+                .eq('id', formData.id)
+                .select();
+            if (error) throw error;
+            setRecords(prev => prev.map(r => r.id === formData.id ? data[0] : r));
+        } else {
+            // Create
+            const recordToSave = {
+              ...formData,
+              pet_id: selectedPet.id,
+              status: 'COMPLETADO' as const
+            }
+            const { data, error } = await supabase
+                .from('medical_records')
+                .insert(recordToSave)
+                .select();
+            if (error) throw error;
+            setRecords(prev => [data[0], ...prev]);
+        }
+    } catch(err: any) {
+        setError(err.message);
+    } finally {
+        setEditingRecord(null);
+    }
   };
   
   const handleAddNewEntry = () => {
     if (!selectedPet) return;
-    setEditingRecord({ petId: selectedPet.id });
+    setEditingRecord({ pet_id: selectedPet.id });
   };
+
+  if (loading) return <div>Cargando expedientes...</div>
+  if (error) return <div>Error: {error}</div>
 
   return (
     <main className="admin-exp-main">
@@ -244,7 +291,7 @@ export default function AdminExpedientes(): JSX.Element {
                 </div>
               )}
               <div className="expediente-pet-info">
-                {SPECIES_LABELS[selectedPet.species]} - {selectedPet.breed || 'Sin raza'} - Nacido el {new Date(selectedPet.birthDate).toLocaleDateString()}
+                {SPECIES_LABELS[selectedPet.species]} - {selectedPet.breed || 'Sin raza'} - Nacido el {new Date(selectedPet.birth_date).toLocaleDateString()}
               </div>
             </div>
             

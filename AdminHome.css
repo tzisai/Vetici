@@ -1,0 +1,30 @@
+.admin-home-main {
+    padding: 80px 20px 20px;
+    text-align: center;
+}
+
+.admin-home-main h1 {
+    color: #194B44;
+}
+
+.appointment-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: left;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.appointment-card h3 {
+    color: #194B44;
+    margin-top: 0;
+}
+
+.appointment-date {
+    font-weight: bold;
+    color: #d9534f;
+}

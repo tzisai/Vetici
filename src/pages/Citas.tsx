@@ -1,57 +1,103 @@
-import React, { useState, useContext } from 'react';
-import appointments, { USER_BOOKABLE_TYPES, APPOINTMENT_TYPE_LABELS } from '../data/appointments';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { supabase } from '../supabaseclient';
+import { APPOINTMENT_TYPE_LABELS } from '../data/appointments';
 import type { Appointment } from '../data/appointments';
+import type { Pet } from '../data/pets';
 import { AuthContext } from '../context/AuthContext';
+import AppointmentFormModal from '../components/AppointmentFormModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 import './citas.css';
 
 export default function Citas(): JSX.Element {
   const { user } = useContext(AuthContext);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    petName: '',
-    type: USER_BOOKABLE_TYPES[0],
-    date: '',
-    time: '',
-    notes: '',
-  });
-  const [userAppointments, setUserAppointments] = useState<Appointment[]>(appointments);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const [isFormOpen, setFormOpen] = useState(false);
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
+  const [appointmentToCancel, setAppointmentToCancel] = useState<string | null>(null);
 
-  const handleBookAppointment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.petName || !formData.date || !formData.time) {
-      alert('Por favor completa todos los campos');
-      return;
+  const fetchData = useCallback(async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      // Fetch pets first
+      const { data: petData, error: petError } = await supabase
+        .from('pets')
+        .select('id, name')
+        .eq('user_id', user.id);
+      if (petError) throw petError;
+      const userPets = petData || [];
+      setPets(userPets);
+
+      // Fetch appointments
+      const { data: apptData, error: apptError } = await supabase
+        .from('appointments')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+      if (apptError) throw apptError;
+      
+      // Add petName to appointments
+      const appointmentsWithPetNames = apptData.map(appt => ({
+        ...appt,
+        petName: userPets.find(p => p.id === appt.pet_id)?.name || 'Mascota eliminada'
+      }))
+      setAppointments(appointmentsWithPetNames || []);
+
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  }, [user]);
 
-    const newAppointment: Appointment = {
-      id: `APT${Date.now()}`,
-      userId: user?.email || 'user1',
-      petId: `pet_${Date.now()}`,
-      petName: formData.petName,
-      type: formData.type as any,
-      date: formData.date,
-      time: formData.time,
-      notes: formData.notes,
-      status: 'PENDIENTE',
-      createdAt: new Date().toISOString().split('T')[0],
-    };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-    setUserAppointments(prev => [newAppointment, ...prev]);
-    setFormData({ petName: '', type: USER_BOOKABLE_TYPES[0], date: '', time: '', notes: '' });
-    setShowForm(false);
-    alert('Cita reservada exitosamente');
+  const handleBookAppointment = async (formData: Omit<Appointment, 'id' | 'user_id' | 'created_at' | 'status' | 'petName' | 'veterinarian'>) => {
+    if (!user) return;
+    try {
+      const petName = pets.find(p => p.id === formData.pet_id)?.name || 'Mascota Desconocida';
+      const newAppointment = {
+        ...formData,
+        user_id: user.id,
+        status: 'PENDIENTE' as const,
+      };
+      const { data, error } = await supabase.from('appointments').insert(newAppointment).select();
+      if (error) throw error;
+
+      const createdAppointment = { ...data[0], petName };
+      setAppointments(prev => [createdAppointment, ...prev]);
+      setFormOpen(false);
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   const handleCancelAppointment = (id: string) => {
-    if (confirm('¿Deseas cancelar esta cita?')) {
-      setUserAppointments(prev =>
-        prev.map(apt => apt.id === id ? { ...apt, status: 'CANCELADA' } : apt)
-      );
+    setAppointmentToCancel(id);
+    setConfirmOpen(true);
+  };
+
+  const confirmCancel = async () => {
+    if (!appointmentToCancel) return;
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .update({ status: 'CANCELADA' })
+        .eq('id', appointmentToCancel)
+        .select();
+      if (error) throw error;
+      setAppointments(prev => prev.map(apt => (apt.id === appointmentToCancel ? { ...data[0], petName: apt.petName } : apt)));
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setConfirmOpen(false);
+      setAppointmentToCancel(null);
     }
   };
 
@@ -65,87 +111,36 @@ export default function Citas(): JSX.Element {
     return statusMap[status] || 'pendiente';
   };
 
-  const upcomingAppointments = userAppointments.filter(apt => apt.status !== 'CANCELADA' && apt.status !== 'COMPLETADA');
-  const pastAppointments = userAppointments.filter(apt => apt.status === 'COMPLETADA' || apt.status === 'CANCELADA');
+  const upcomingAppointments = appointments.filter(apt => apt.status !== 'CANCELADA' && apt.status !== 'COMPLETADA');
+  const pastAppointments = appointments.filter(apt => apt.status === 'COMPLETADA' || apt.status === 'CANCELADA');
+
+  if (loading) return <div>Cargando citas...</div>
+  if (error) return <div>Error: {error}</div>
 
   return (
     <main className="citas-main">
       <div className="citas-header">
         <h1>Mis Citas</h1>
-        <button className="btn-new-cita" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancelar' : 'Nueva cita'}
+        <button className="btn-new-cita" onClick={() => setFormOpen(true)}>
+          Nueva cita
         </button>
       </div>
 
-      {/* Formulario de reserva */}
-      {showForm && (
-        <div className="citas-form-container">
-          <h2>Reservar Nueva Cita</h2>
-          <form onSubmit={handleBookAppointment} className="citas-form">
-            <div className="form-group">
-              <label>Nombre de la mascota *</label>
-              <input
-                type="text"
-                name="petName"
-                value={formData.petName}
-                onChange={handleInputChange}
-                placeholder="Ej: Max, Luna..."
-                required
-              />
-            </div>
+      <AppointmentFormModal
+        isOpen={isFormOpen}
+        onClose={() => setFormOpen(false)}
+        onSave={handleBookAppointment}
+        pets={pets}
+      />
 
-            <div className="form-group">
-              <label>Tipo de servicio *</label>
-              <select name="type" value={formData.type} onChange={handleInputChange}>
-                {USER_BOOKABLE_TYPES.map(type => (
-                  <option key={type} value={type}>
-                    {APPOINTMENT_TYPE_LABELS[type]}
-                  </option>
-                ))}
-              </select>
-            </div>
+      <ConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={confirmCancel}
+        title="Confirmar Cancelación"
+        message="¿Estás seguro de que quieres cancelar esta cita?"
+      />
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Fecha *</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  min={new Date().toISOString().split('T')[0]}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Hora *</label>
-                <input
-                  type="time"
-                  name="time"
-                  value={formData.time}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Notas</label>
-              <textarea
-                name="notes"
-                value={formData.notes}
-                onChange={handleInputChange}
-                placeholder="Información adicional (alergias, comportamiento especial, etc.)"
-                rows={3}
-              />
-            </div>
-
-            <button type="submit" className="btn-submit">Reservar cita</button>
-          </form>
-        </div>
-      )}
-
-      {/* Citas próximas */}
       <div className="citas-section">
         <h2>Citas Próximas</h2>
         {upcomingAppointments.length === 0 ? (
@@ -181,9 +176,9 @@ export default function Citas(): JSX.Element {
                     </div>
                   )}
                 </div>
-                {apt.status !== 'CONFIRMADA' && (
-                  <button 
-                    className="btn-cancel" 
+                {apt.status === 'PENDIENTE' && (
+                  <button
+                    className="btn-cancel"
                     onClick={() => handleCancelAppointment(apt.id)}
                   >
                     Cancelar cita
@@ -195,7 +190,6 @@ export default function Citas(): JSX.Element {
         )}
       </div>
 
-      {/* Historial de citas */}
       {pastAppointments.length > 0 && (
         <div className="citas-section">
           <h2>Historial de Citas</h2>

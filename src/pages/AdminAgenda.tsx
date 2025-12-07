@@ -1,75 +1,121 @@
-import React, { useState } from 'react';
-import appointmentsData, { type Appointment, APPOINTMENT_TYPE_LABELS } from '../data/appointments';
-import petsData from '../data/pets';
-import usersData from '../data/users';
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../supabaseclient';
+import type { Appointment } from '../data/appointments';
+import { APPOINTMENT_TYPE_LABELS } from '../data/appointments';
+import AdminAppointmentModal from '../components/AdminAppointmentModal';
 import './AdminAgenda.css';
 
+// Extend Appointment to include joined data
+type RichAppointment = Appointment & {
+    pets: { name: string } | null;
+    profiles: { name: string, email: string } | null;
+};
+
 const AdminAgenda: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>(appointmentsData);
+    const [appointments, setAppointments] = useState<RichAppointment[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string|null>(null);
+    const [editingAppointment, setEditingAppointment] = useState<RichAppointment|null>(null);
 
-  const getPetName = (petId: string) => {
-    const pet = petsData.pets.find(p => p.id === petId);
-    return pet ? pet.name : 'Desconocido';
-  };
+    const fetchAppointments = useCallback(async () => {
+        try {
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('appointments')
+                .select(`
+                    *,
+                    pets (name),
+                    profiles (name, email)
+                `)
+                .order('date', { ascending: true });
 
-  const getOwnerName = (userId: string) => {
-    const user = usersData.find(u => u.id === userId);
-    return user ? user.name : 'Desconocido';
-  };
+            if (error) throw error;
+            setAppointments(data as RichAppointment[] || []);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-  const handleCancel = (id: string) => {
-    if (window.confirm('¿Estás seguro de que quieres cancelar esta cita?')) {
-      setAppointments(prevAppointments =>
-        prevAppointments.map(app =>
-          app.id === id ? { ...app, status: 'CANCELADA' } : app
-        )
-      );
-      alert('Cita cancelada.');
-    }
-  };
+    useEffect(() => {
+        fetchAppointments();
+    }, [fetchAppointments]);
 
-  const handleReschedule = (id: string) => {
-    // For now, just mark it as pending reschedule. A real implementation would involve a modal for new date/time.
-    alert(`Funcionalidad de reagendar para la cita ${id} (no implementada completamente).`);
-    setAppointments(prevAppointments =>
-      prevAppointments.map(app =>
-        app.id === id ? { ...app, status: 'PENDIENTE' } : app
-      )
-    );
-  };
+    const handleUpdate = async (appointmentId: string, updates: Partial<Appointment>) => {
+        try {
+            const { data, error } = await supabase
+                .from('appointments')
+                .update(updates)
+                .eq('id', appointmentId)
+                .select(`*, pets (name), profiles (name, email)`)
+                .single();
 
-  return (
-    <div className="admin-agenda-container">
-      <h1>Gestión de Citas</h1>
-      <div className="appointment-list">
-        {appointments.length === 0 ? (
-          <p>No hay citas programadas.</p>
-        ) : (
-          appointments.map(appointment => (
-            <div key={appointment.id} className={`appointment-card status-${appointment.status.toLowerCase()}`}>
-              <div className="appointment-header">
-                <h2>Cita #{appointment.id} - {APPOINTMENT_TYPE_LABELS[appointment.type]}</h2>
-                <span className={`appointment-status status-${appointment.status.toLowerCase()}`}>{appointment.status}</span>
-              </div>
-              <p><strong>Mascota:</strong> {getPetName(appointment.petId)}</p>
-              <p><strong>Dueño:</strong> {getOwnerName(appointment.userId)}</p>
-              <p><strong>Fecha:</strong> {appointment.date} - <strong>Hora:</strong> {appointment.time}</p>
-              {appointment.veterinarian && <p><strong>Veterinario:</strong> {appointment.veterinarian}</p>}
-              {appointment.notes && <p><strong>Notas:</strong> {appointment.notes}</p>}
-              <div className="appointment-actions">
-                {appointment.status !== 'CANCELADA' && appointment.status !== 'COMPLETADA' && (
-                  <>
-                    <button onClick={() => handleReschedule(appointment.id)} className="btn-reschedule">Reagendar</button>
-                    <button onClick={() => handleCancel(appointment.id)} className="btn-cancel">Cancelar</button>
-                  </>
+            if (error) throw error;
+
+            setAppointments(prev => prev.map(a => (a.id === appointmentId ? data : a)));
+            setEditingAppointment(null);
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+    
+    if (loading) return <div>Cargando agenda...</div>
+    if (error) return <div>Error: {error}</div>
+
+    return (
+        <div className="admin-agenda-container">
+            <h1>Gestión de Citas</h1>
+
+            {editingAppointment && (
+                <AdminAppointmentModal
+                    isOpen={!!editingAppointment}
+                    onClose={() => setEditingAppointment(null)}
+                    appointment={editingAppointment}
+                    onSave={handleUpdate}
+                />
+            )}
+
+            <div className="appointment-list">
+                {appointments.length === 0 ? (
+                    <p>No hay citas programadas.</p>
+                ) : (
+                    appointments.map(appointment => (
+                        <div key={appointment.id} className={`appointment-card status-${appointment.status.toLowerCase()}`}>
+                            <div className="appointment-header">
+                                <h2>{APPOINTMENT_TYPE_LABELS[appointment.type]}</h2>
+                                <span className={`appointment-status status-${appointment.status.toLowerCase()}`}>{appointment.status}</span>
+                            </div>
+                            <p><strong>Mascota:</strong> {appointment.pets?.name || 'N/A'}</p>
+                            <p><strong>Dueño:</strong> {appointment.profiles?.name || 'N/A'} ({appointment.profiles?.email || 'N/A'})</p>
+                            <p><strong>Fecha:</strong> {new Date(appointment.date).toLocaleDateString()} - <strong>Hora:</strong> {appointment.time}</p>
+                            {appointment.veterinarian && <p><strong>Veterinario:</strong> {appointment.veterinarian}</p>}
+                            {appointment.notes && <p><strong>Notas:</strong> {appointment.notes}</p>}
+                            
+                            <div className="appointment-actions">
+                                {appointment.status === 'PENDIENTE' && (
+                                    <button onClick={() => handleUpdate(appointment.id, { status: 'CONFIRMADA' })} className="btn-confirm">
+                                        Confirmar
+                                    </button>
+                                )}
+                                {appointment.status === 'CONFIRMADA' && (
+                                    <button onClick={() => handleUpdate(appointment.id, { status: 'COMPLETADA' })} className="btn-complete">
+                                        Marcar como Completada
+                                    </button>
+                                )}
+                                <button onClick={() => setEditingAppointment(appointment)} className="btn-edit">Editar</button>
+                                {appointment.status !== 'CANCELADA' && (
+                                    <button onClick={() => handleUpdate(appointment.id, { status: 'CANCELADA' })} className="btn-cancel">
+                                        Cancelar
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))
                 )}
-              </div>
             </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default AdminAgenda;

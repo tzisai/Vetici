@@ -21,6 +21,7 @@
 .pet-list-header h2 {
   margin: 0 0 1rem 0;
   font-size: 1.5rem;
+  color: #333;
 }
 
 .pet-search-input {
@@ -34,11 +35,12 @@
 .pet-list {
   overflow-y: auto;
   flex-grow: 1;
+  color:#333;
 }
 
 .pet-list-item {
   padding: 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #c9d1d1;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -49,7 +51,7 @@
 
 .pet-list-item.active {
   background-color: #007bff;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .pet-list-item.active .pet-item-species {
@@ -79,6 +81,7 @@
   flex-grow: 1;
   padding: 2rem;
   overflow-y: auto;
+  color: #333;
 }
 
 .expediente-placeholder {
@@ -103,6 +106,7 @@
 .expediente-header h2 {
   font-size: 2rem;
   margin: 0 0 0.5rem 0;
+  color: #333;
 }
 
 .expediente-owner-info {

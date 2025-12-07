@@ -47,8 +47,7 @@ export default function Navbar(): JSX.Element {
                                         <a href="#productos">Tienda</a>
                                         <a href="#mis-mascotas">Mis mascotas</a>
                                         <a href="#mis-citas">Citas</a>
-                                        <a href="#cuenta">Mi cuenta</a>
-                                        <a href="#" onClick={(e) => { e.preventDefault(); logout(); }}>Cerrar sesión</a>
+                                        <a href="#micuenta">Mi cuenta</a>
                                     </>
                                 )}
 
@@ -57,11 +56,12 @@ export default function Navbar(): JSX.Element {
                                     <>
                                         <a href="#inicio">Inicio</a>
                                         <a href="#inventario">Inventario</a>
+                                        <a href="#pedidos">Pedidos</a>
+                                        <a href="#proveedores">Proveedores</a>
                                         <a href="#agenda">Agenda</a>
                                         <a href="#expedientes">Expedientes</a>
                                         <a href="#finanzas">Finanzas</a>
-                                        <a href="#cuenta">Mi cuenta</a>
-                                        <a href="#" onClick={(e) => { e.preventDefault(); logout(); }}>Cerrar sesión</a>
+                                        <a href="#micuenta">Mi cuenta</a>
                                     </>
                                 )}
                         </div>

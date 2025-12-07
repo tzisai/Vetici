@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import orders, { STATUS_LABELS, STATUS_COLORS } from '../data/orders';
 import type { Order } from '../data/orders';
 import './myaccount.css';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function MyAccount(): JSX.Element {
   const { user, logout } = useContext(AuthContext);
@@ -18,6 +19,7 @@ export default function MyAccount(): JSX.Element {
     confirm: '',
   });
   const [userOrders] = useState<Order[]>(orders.filter(o => o.userId === (user?.email || 'user1')));
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,6 +59,15 @@ export default function MyAccount(): JSX.Element {
     }
   };
 
+  const handleLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const confirmLogout = () => {
+    logout();
+    setIsLogoutModalOpen(false);
+  };
+
   return (
     <main className="myaccount-main">
       {/* Header del perfil */}
@@ -68,6 +79,7 @@ export default function MyAccount(): JSX.Element {
           <h1>{user?.name || 'Usuario'}</h1>
           <p>{user?.email}</p>
           <p className="role-badge">{user?.role === 'ADMIN' ? 'Veterinario' : 'Cliente'}</p>
+          <button className="btn-logout" onClick={handleLogout}>Cerrar Sesión</button>
         </div>
       </div>
 
@@ -273,6 +285,14 @@ export default function MyAccount(): JSX.Element {
           </div>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={confirmLogout}
+        title="Confirmar Cierre de Sesión"
+        message="¿Estás seguro de que quieres cerrar sesión?"
+      />
     </main>
   );
 }

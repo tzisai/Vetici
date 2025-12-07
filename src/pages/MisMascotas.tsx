@@ -1,146 +1,141 @@
-import React, { useState } from 'react';
-import petData, { SPECIES_LABELS } from '../data/pets';
+import React, { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../supabaseclient';
+import { SPECIES_LABELS } from '../data/pets';
 import type { Pet, MedicalRecord } from '../data/pets';
 import PetCard from '../components/PetCard';
+import PetFormModal from '../components/PetFormModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 import './mismascotas.css';
 
 export default function MisMascotas(): JSX.Element {
-  const [pets, setPets] = useState<Pet[]>(petData.pets);
-  const [records] = useState<MedicalRecord[]>(petData.medicalRecords);
-  const [showForm, setShowForm] = useState(false);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [isFormOpen, setFormOpen] = useState(false);
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
+  const [isRecordsOpen, setRecordsOpen] = useState(false);
+
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
-  const [showRecords, setShowRecords] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    species: 'PERRO' as const,
-    breed: '',
-    birthDate: '',
-    microchip: '',
-  });
+  const [petToDelete, setPetToDelete] = useState<string | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const fetchPets = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No has iniciado sesión.');
 
-  const handleAddPet = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.birthDate) {
-      alert('Por favor completa los campos requeridos');
-      return;
+      const { data, error } = await supabase
+        .from('pets')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPets(data || []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
-    const newPet: Pet = {
-      id: `pet_${Date.now()}`,
-      userId: 'user1',
-      name: formData.name,
-      species: formData.species,
-      breed: formData.breed || undefined,
-      birthDate: formData.birthDate,
-      microchip: formData.microchip || undefined,
-      photo: 'https://via.placeholder.com/200x200?text=Sin+foto',
-      createdAt: new Date().toISOString().split('T')[0],
-    };
+  useEffect(() => {
+    fetchPets();
+  }, [fetchPets]);
 
-    setPets(prev => [newPet, ...prev]);
-    setFormData({ name: '', species: 'PERRO', breed: '', birthDate: '', microchip: '' });
-    setShowForm(false);
-    alert('Mascota agregada exitosamente');
+  const handleAdd = () => {
+    setSelectedPet(null);
+    setFormOpen(true);
   };
 
-  const handleDeletePet = (petId: string) => {
-    if (confirm('¿Estás seguro de que deseas eliminar esta mascota?')) {
-      setPets(prev => prev.filter(p => p.id !== petId));
-    }
-  };
-
-  const handleViewDetails = (pet: Pet) => {
+  const handleEdit = (pet: Pet) => {
     setSelectedPet(pet);
-    setShowRecords(true);
+    setFormOpen(true);
   };
 
-  const petRecords = selectedPet ? records.filter(r => r.petId === selectedPet.id) : [];
+  const handleDelete = (petId: string) => {
+    setPetToDelete(petId);
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!petToDelete) return;
+    try {
+      const { error } = await supabase.from('pets').delete().eq('id', petToDelete);
+      if (error) throw error;
+      setPets(pets.filter(p => p.id !== petToDelete));
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setConfirmOpen(false);
+      setPetToDelete(null);
+    }
+  };
+
+  const handleSave = async (formData: Omit<Pet, 'id' | 'user_id' | 'created_at' | 'photo'>) => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('No has iniciado sesión.');
+
+        const petData = { ...formData, user_id: user.id };
+
+      if (selectedPet) {
+        // Update
+        const { data, error } = await supabase
+          .from('pets')
+          .update(petData)
+          .eq('id', selectedPet.id)
+          .select();
+        if (error) throw error;
+        setPets(pets.map(p => (p.id === selectedPet.id ? data[0] : p)));
+      } else {
+        // Create
+        const { data, error } = await supabase.from('pets').insert(petData).select();
+        if (error) throw error;
+        setPets([data[0], ...pets]);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setFormOpen(false);
+    }
+  };
+
+  const handleViewDetails = async (pet: Pet) => {
+    setSelectedPet(pet);
+    try {
+        const { data, error } = await supabase
+            .from('medical_records')
+            .select('*')
+            .eq('pet_id', pet.id)
+            .order('date', { ascending: false });
+
+        if (error) throw error;
+        setRecords(data || []);
+    } catch (err: any) {
+        setError(err.message);
+    }
+    setRecordsOpen(true);
+  };
+
+  if (loading) return <div className="loading-state">Cargando tus mascotas...</div>;
+  if (error) return <div className="error-state">Error: {error}</div>;
 
   return (
     <main className="mascotas-main">
       <div className="mascotas-header">
         <h1>Mis Mascotas</h1>
-        <button className="btn-new-pet" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancelar' : 'Agregar mascota'}
+        <button className="btn-new-pet" onClick={handleAdd}>
+          + Agregar mascota
         </button>
       </div>
 
-      {/* Formulario de nueva mascota */}
-      {showForm && (
-        <div className="mascotas-form-container">
-          <h2>Registrar Nueva Mascota</h2>
-          <form onSubmit={handleAddPet} className="mascotas-form">
-            <div className="form-group">
-              <label>Nombre *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Ej: Max, Luna..."
-                required
-              />
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Especie *</label>
-                <select name="species" value={formData.species} onChange={handleInputChange}>
-                  {Object.entries(SPECIES_LABELS).map(([key, label]) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Raza</label>
-                <input
-                  type="text"
-                  name="breed"
-                  value={formData.breed}
-                  onChange={handleInputChange}
-                  placeholder="Ej: Labrador..."
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Fecha de nacimiento *</label>
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Microchip</label>
-                <input
-                  type="text"
-                  name="microchip"
-                  value={formData.microchip}
-                  onChange={handleInputChange}
-                  placeholder="Número de microchip"
-                />
-              </div>
-            </div>
-
-            <button type="submit" className="btn-submit">Registrar mascota</button>
-          </form>
-        </div>
-      )}
-
-      {/* Modal de expediente */}
-      {showRecords && selectedPet && (
-        <div className="modal-overlay" onClick={() => setShowRecords(false)}>
+      {isRecordsOpen && selectedPet && (
+        <div className="modal-overlay" onClick={() => setRecordsOpen(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowRecords(false)}>X</button>
+            <button className="modal-close" onClick={() => setRecordsOpen(false)}>X</button>
             <h2>Expediente de {selectedPet.name}</h2>
             
             <div className="expediente-info">
@@ -153,7 +148,7 @@ export default function MisMascotas(): JSX.Element {
                   <strong>Raza:</strong> {selectedPet.breed || 'No especificada'}
                 </div>
                 <div className="info-item">
-                  <strong>Fecha de nacimiento:</strong> {new Date(selectedPet.birthDate).toLocaleDateString('es-ES')}
+                  <strong>Fecha de nacimiento:</strong> {new Date(selectedPet.birth_date).toLocaleDateString('es-ES')}
                 </div>
                 <div className="info-item">
                   <strong>Microchip:</strong> {selectedPet.microchip || 'No registrado'}
@@ -163,11 +158,11 @@ export default function MisMascotas(): JSX.Element {
 
             <div className="expediente-records">
               <h3>Historial Médico</h3>
-              {petRecords.length === 0 ? (
+              {records.length === 0 ? (
                 <p className="empty-msg">No hay registros médicos aún.</p>
               ) : (
                 <div className="records-list">
-                  {petRecords.map(record => (
+                  {records.map(record => (
                     <div key={record.id} className={`record-card status-${record.status.toLowerCase()}`}>
                       <div className="record-header">
                         <strong>{record.type}</strong>
@@ -198,7 +193,6 @@ export default function MisMascotas(): JSX.Element {
         </div>
       )}
 
-      {/* Grid de mascotas */}
       <div className="mascotas-grid">
         {pets.length === 0 ? (
           <p className="empty-msg">No tienes mascotas registradas. ¡Agrega una ahora!</p>
@@ -208,11 +202,27 @@ export default function MisMascotas(): JSX.Element {
               key={pet.id}
               pet={pet}
               onViewDetails={handleViewDetails}
-              onDelete={handleDeletePet}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           ))
         )}
       </div>
+
+      <PetFormModal
+        isOpen={isFormOpen}
+        onClose={() => setFormOpen(false)}
+        onSave={handleSave}
+        pet={selectedPet}
+      />
+
+      <ConfirmationModal
+        isOpen={isConfirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Confirmar Eliminación"
+        message="¿Estás seguro de que quieres eliminar esta mascota? Esto también eliminará su historial médico."
+      />
     </main>
   );
 }
